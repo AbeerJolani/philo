@@ -1,8 +1,8 @@
 CC = cc
-SRC = philo.c main.c
+SRC = philo.c
 OBJ := $(SRC:%.c=%.o)
-NAME = prog
-CFLAGS = -Wall -Wextra -Werror
+NAME = philo
+CFLAGS = -Wall -Wextra -Werror -Iinclude
 
 all: $(NAME)
 

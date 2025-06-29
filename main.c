@@ -6,7 +6,7 @@
 /*   By: aal-joul <aal-joul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 12:09:40 by aal-joul          #+#    #+#             */
-/*   Updated: 2025/06/18 17:52:57 by aal-joul         ###   ########.fr       */
+/*   Updated: 2025/06/29 16:51:28 by aal-joul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,20 +14,15 @@
 
 int	main(int argc, char **argv)
 {
-	t_argu	argu;
-	
-	if (!parse_ar(argc, argv, argu))
-	{
-		printf("ERROR: INVALID ARGUMENTS\n");
+	t_data	data;
+
+	if (parse_args(&data, argc, argv))
 		return (1);
-	}
-	printf("philosophers num: %d\n", argu.philo_n);
-	printf("time_to_die: %d\n", argu.time_to_die);
-	printf("time_to_eat: %d\n", argu.time_to_eat);
-	printf("time_to_sleep: %d\n", argu.time_to_sleep);
-	if (argu.has_limit)
-		printf("must eat: %d times\n", argu.eat_count);
-	else
-		printf("No eat limit set\n");
+
+	init_mutexes(&data);
+	init_philos(&data);
+	start_threads(&data);
+	join_threads(&data);
+	cleanup(&data);
 	return (0);
 }
