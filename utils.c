@@ -6,16 +6,17 @@
 /*   By: aal-joul <aal-joul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 12:09:28 by aal-joul          #+#    #+#             */
-/*   Updated: 2025/06/29 16:51:14 by aal-joul         ###   ########.fr       */
+/*   Updated: 2025/06/30 12:57:47 by aal-joul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	init_mutix(t_data *data)
+void	init_mutexes(t_data *data)
 {
 	int	i;
 
+	i = 0;
 	data->forks = malloc(sizeof(pthread_mutex_t) * data->philo_n);
 	if (!data->forks)
 		exit(1);
@@ -26,11 +27,11 @@ void	init_mutix(t_data *data)
 	}
 	pthread_mutex_init(&data->print_lock, NULL);
 }
-void	start_thread(t_data *data)
+void	start_threads(t_data *data)
 {
 	int	i;
 
-	data->start_time = get_time_now;
+	data->start_time = get_time_now();
 	data->someone_die = 0;
 	i = 0;
 	while (i < data->philo_n)
@@ -40,7 +41,7 @@ void	start_thread(t_data *data)
 	}
 }
 
-void	join_thread(t_data *data)
+void	join_threads(t_data *data)
 {
 	int	i;
 
@@ -48,9 +49,10 @@ void	join_thread(t_data *data)
 	while (i < data->philo_n)
 	{
 		pthread_join(data->philos[i].thread, NULL);
+		i++;
 	}
 }
-void	clean(t_data *data)
+void	cleanup(t_data *data)
 {
 	int	i;
 

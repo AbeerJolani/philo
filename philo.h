@@ -6,7 +6,7 @@
 /*   By: aal-joul <aal-joul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 12:08:55 by aal-joul          #+#    #+#             */
-/*   Updated: 2025/06/29 16:25:29 by aal-joul         ###   ########.fr       */
+/*   Updated: 2025/06/30 13:29:21 by aal-joul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,12 @@ typedef struct s_data
 	pthread_mutex_t	*print_lock;
 }	t_data;
 
-int	parse_ar(int a, char **v, t_data g);
+int		parse_args(t_data *data, int argc, char **argv);
+void	*routine(void *arg);
+void	init_mutexes(t_data *data);
+void	start_threads(t_data *data);
+void	join_threads(t_data *data);
+void	cleanup(t_data *data);
+void	init_philo(t_data *data);
 
 #endif
