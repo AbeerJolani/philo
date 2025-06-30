@@ -44,9 +44,10 @@ typedef struct s_data
 	long			start_time;
 	t_philo			*philos;
 	pthread_mutex_t	*forks;
-	pthread_mutex_t	*print_lock;
+	pthread_mutex_t	print_lock;
 }	t_data;
 
+long	get_time_now(void);
 int		parse_args(t_data *data, int argc, char **argv);
 void	*routine(void *arg);
 void	init_mutexes(t_data *data);
