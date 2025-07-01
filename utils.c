@@ -6,52 +6,74 @@
 /*   By: aal-joul <aal-joul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 12:09:28 by aal-joul          #+#    #+#             */
-/*   Updated: 2025/06/30 12:57:47 by aal-joul         ###   ########.fr       */
+/*   Updated: 2025/07/01 16:40:19 by aal-joul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	init_mutexes(t_data *data)
+long	get_time_now(void)
+{
+	struct timeval	tv;
+	long			ms;
+
+	gettimeofday(&tv, NULL);
+	ms = (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
+	return (ms);
+}
+
+int	ft_atoi(const char *str)
+{
+	int	result;
+	int	sign;
+
+	result = 0;
+	sign = 1;
+	while (*str == ' ' || (*str >= 9 && *str <= 13))
+		str++;
+	if (*str == '+')
+		str++;
+	else if (*str == '-')
+		return (-1);
+	while (*str >= '0' && *str <= '9')
+	{
+		result = result * 10 + (*str - '0');
+		str++;
+	}
+	return (result * sign);
+}
+
+static int	all_philos_ate(t_data *data)
 {
 	int	i;
 
 	i = 0;
-	data->forks = malloc(sizeof(pthread_mutex_t) * data->philo_n);
-	if (!data->forks)
-		exit(1);
 	while (i < data->philo_n)
 	{
-		pthread_mutex_init(&data->forks[i], NULL);
+		if (data->philos[i].meals_c < data->eat_count)
+			return (0);
 		i++;
 	}
-	pthread_mutex_init(&data->print_lock, NULL);
+	return (1);
 }
-void	start_threads(t_data *data)
+
+void	*all_feed(void *arg)
 {
-	int	i;
+	t_data	*data;
 
-	data->start_time = get_time_now();
-	data->someone_die = 0;
-	i = 0;
-	while (i < data->philo_n)
+	data = (t_data *)arg;
+	while (!data->someone_die)
 	{
-		pthread_create(&data->philos[i].thread, NULL, routine, &data->philos[i]);
-		i++;
+		if (all_philos_ate(data))
+		{
+			data->someone_die = 1;
+			break ;
+		}
+		usleep(1000);
 	}
+	return (NULL);
 }
 
-void	join_threads(t_data *data)
-{
-	int	i;
-
-	i = 0;
-	while (i < data->philo_n)
-	{
-		pthread_join(data->philos[i].thread, NULL);
-		i++;
-	}
-}
 void	cleanup(t_data *data)
 {
 	int	i;
@@ -63,6 +85,9 @@ void	cleanup(t_data *data)
 		i++;
 	}
 	pthread_mutex_destroy(&data->print_lock);
-	free(data->forks);
-	free(data->philos);
+	pthread_mutex_destroy(&data->death_lock);
+	if (data->forks)
+		free(data->forks);
+	if (data->philos)
+		free(data->philos);
 }

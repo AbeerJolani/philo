@@ -1,5 +1,5 @@
 CC = cc
-SRC = philo.c utils.c life.c main.c
+SRC = philo.c utils.c life.c mutex.c threads.c help.c main.c
 OBJ := $(SRC:%.c=%.o)
 NAME = philo
 CFLAGS = -Wall -Wextra -Werror -Iinclude

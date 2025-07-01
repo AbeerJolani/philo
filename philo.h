@@ -6,7 +6,7 @@
 /*   By: aal-joul <aal-joul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 12:08:55 by aal-joul          #+#    #+#             */
-/*   Updated: 2025/06/30 13:29:21 by aal-joul         ###   ########.fr       */
+/*   Updated: 2025/07/01 16:36:37 by aal-joul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 # include <pthread.h>
 # include <sys/time.h>
 
-typedef struct s_data t_data;
+typedef struct s_data	t_data;
 
 typedef struct s_philo
 {
@@ -45,15 +45,28 @@ typedef struct s_data
 	t_philo			*philos;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	print_lock;
+	pthread_mutex_t	death_lock;
 }	t_data;
 
-long	get_time_now(void);
+int		check_death(t_philo *philo);
+int		has_died(t_philo *philo);
+int		eat(t_philo *philo);
+int		take_forks(t_philo *philo);
+int		is_simulation_over(t_data *data);
+int		sleep_and_think(t_philo *philo);
+int		ft_atoi(const char *str);
 int		parse_args(t_data *data, int argc, char **argv);
+long	get_time_now(void);
+void	print_state(t_philo *philo, const char *msg);
+void	put_down_forks(t_philo *philo);
+void	*all_feed(void *arg);
+void	smart_sleep(long duration);
 void	*routine(void *arg);
 void	init_mutexes(t_data *data);
 void	start_threads(t_data *data);
 void	join_threads(t_data *data);
 void	cleanup(t_data *data);
 void	init_philo(t_data *data);
+void	*monitor(void *arg);
 
 #endif

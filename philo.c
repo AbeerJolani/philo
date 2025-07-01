@@ -6,7 +6,7 @@
 /*   By: aal-joul <aal-joul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 12:08:47 by aal-joul          #+#    #+#             */
-/*   Updated: 2025/06/29 16:40:02 by aal-joul         ###   ########.fr       */
+/*   Updated: 2025/07/01 16:33:24 by aal-joul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,4 +30,34 @@ void	init_philo(t_data *data)
 		data->philos[i].data = data;
 		i++;
 	}
+}
+
+int	sleep_and_think(t_philo *philo)
+{
+	if (check_death(philo))
+		return (0);
+	print_state(philo, "is sleeping");
+	smart_sleep(philo->data->time_to_sleep);
+	return (1);
+}
+
+void	*routine(void *arg)
+{
+	t_philo	*philo;
+
+	philo = (t_philo *)arg;
+	if (philo->id % 2 == 1)
+		usleep(200);
+	while (!check_death(philo))
+	{
+		print_state(philo, "is thinking");
+		if (!take_forks(philo))
+			break ;
+		if (!eat(philo))
+			break ;
+		put_down_forks(philo);
+		if (!sleep_and_think(philo))
+			break ;
+	}
+	return (NULL);
 }
