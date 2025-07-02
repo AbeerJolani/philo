@@ -6,7 +6,7 @@
 /*   By: aal-joul <aal-joul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 12:08:55 by aal-joul          #+#    #+#             */
-/*   Updated: 2025/07/01 16:36:37 by aal-joul         ###   ########.fr       */
+/*   Updated: 2025/07/02 15:34:10 by aal-joul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ typedef struct s_philo
 	int			meals_c;
 	pthread_t	thread;
 	t_data		*data;
+	pthread_mutex_t	state_lock;
 }	t_philo;
 
 typedef struct s_data
@@ -56,11 +57,11 @@ int		is_simulation_over(t_data *data);
 int		sleep_and_think(t_philo *philo);
 int		ft_atoi(const char *str);
 int		parse_args(t_data *data, int argc, char **argv);
+int		smart_sleep(t_philo	*philo, long duration);
 long	get_time_now(void);
 void	print_state(t_philo *philo, const char *msg);
 void	put_down_forks(t_philo *philo);
 void	*all_feed(void *arg);
-void	smart_sleep(long duration);
 void	*routine(void *arg);
 void	init_mutexes(t_data *data);
 void	start_threads(t_data *data);

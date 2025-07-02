@@ -6,7 +6,7 @@
 /*   By: aal-joul <aal-joul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 12:09:28 by aal-joul          #+#    #+#             */
-/*   Updated: 2025/07/01 16:40:19 by aal-joul         ###   ########.fr       */
+/*   Updated: 2025/07/02 16:20:07 by aal-joul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,39 +40,55 @@ int	ft_atoi(const char *str)
 		result = result * 10 + (*str - '0');
 		str++;
 	}
+	if (*str != '\0')
+		return (-1);
 	return (result * sign);
 }
 
-static int	all_philos_ate(t_data *data)
+// static int	all_philos_ate(t_data *data)
+// {
+// 	int	i;
+
+// 	i = 0;
+// 	while (i < data->philo_n)
+// 	{
+// 		if (data->philos[i].meals_c < data->eat_count)
+// 			return (0);
+// 		i++;
+// 	}
+// 	return (1);
+// }
+
+void *all_feed(void *arg)
 {
+	t_data *data = (t_data *)arg;
 	int	i;
+	int	full;
 
-	i = 0;
-	while (i < data->philo_n)
+	while (!check_death(data->philos))
 	{
-		if (data->philos[i].meals_c < data->eat_count)
-			return (0);
-		i++;
-	}
-	return (1);
-}
-
-void	*all_feed(void *arg)
-{
-	t_data	*data;
-
-	data = (t_data *)arg;
-	while (!data->someone_die)
-	{
-		if (all_philos_ate(data))
+		full = 0;
+		i = 0;
+		while (i < data->philo_n)
 		{
+			pthread_mutex_lock(&data->philos[i].state_lock);
+			if (data->philos[i].meals_c >= data->eat_count)
+				full++;
+			pthread_mutex_unlock(&data->philos[i].state_lock);
+			i++;
+		}
+		if (full == data->philo_n)
+		{
+			pthread_mutex_lock(&data->death_lock);
 			data->someone_die = 1;
-			break ;
+			pthread_mutex_unlock(&data->death_lock);
+			return (NULL);
 		}
 		usleep(1000);
 	}
 	return (NULL);
 }
+
 
 void	cleanup(t_data *data)
 {

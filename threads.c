@@ -6,7 +6,7 @@
 /*   By: aal-joul <aal-joul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 13:35:52 by aal-joul          #+#    #+#             */
-/*   Updated: 2025/07/01 16:37:24 by aal-joul         ###   ########.fr       */
+/*   Updated: 2025/07/02 12:00:31 by aal-joul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,21 @@
 
 void	one_philo(t_data *data)
 {
+	t_philo	philo;
+
+	philo.id = 1;
+	philo.data = data;
+	pthread_mutex_lock(&data->print_lock);
 	printf("0 1 is thinking\n");
 	printf("0 1 has taken left fork\n");
-	smart_sleep(data->time_to_die);
+	pthread_mutex_unlock(&data->print_lock);
+	smart_sleep(&philo, data->time_to_die);
+	pthread_mutex_lock(&data->print_lock);
 	printf("%d 1 died\n", data->time_to_die);
+	pthread_mutex_unlock(&data->print_lock);
+	pthread_mutex_lock(&data->death_lock);
+	data->someone_die = 1;
+	pthread_mutex_unlock(&data->death_lock);
 }
 
 void	start_threads(t_data *data)
