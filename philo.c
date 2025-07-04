@@ -6,7 +6,7 @@
 /*   By: aal-joul <aal-joul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 12:08:47 by aal-joul          #+#    #+#             */
-/*   Updated: 2025/07/02 17:35:26 by aal-joul         ###   ########.fr       */
+/*   Updated: 2025/07/04 18:48:59 by aal-joul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,27 +47,25 @@ int	sleep_and_think(t_philo *philo)
 {
 	int	s;
 
-	if (check_death(philo))
+	pthread_mutex_lock(&philo->data->death_lock);
+	if (philo->data->someone_die)
+	{
+		pthread_mutex_unlock(&philo->data->death_lock);
 		return (0);
-	pthread_mutex_lock(&philo->data->print_lock);
+	}
+	pthread_mutex_unlock(&philo->data->death_lock);
 	print_state(philo, "is sleeping");
-	pthread_mutex_unlock(&philo->data->print_lock);
 	s = smart_sleep(philo, philo->data->time_to_sleep);
 	return (s);
 }
 
-void	*routine(void *arg)
+int	execute_loop(t_philo *philo)
 {
-	t_philo	*philo;
-
-	philo = (t_philo *)arg;
-	if (philo->id % 2 == 1)
-		usleep(200);
-	while (!check_death(philo))
+	while (1)
 	{
-		pthread_mutex_lock(&philo->data->print_lock);
+		if (check_death(philo))
+			break ;
 		print_state(philo, "is thinking");
-		pthread_mutex_unlock(&philo->data->print_lock);
 		if (!take_forks(philo))
 			break ;
 		if (!eat(philo))
@@ -79,5 +77,16 @@ void	*routine(void *arg)
 		if (!sleep_and_think(philo))
 			break ;
 	}
+	return (0);
+}
+
+void	*routine(void *arg)
+{
+	t_philo	*philo;
+
+	philo = (t_philo *)arg;
+	if (philo->id % 2 == 1)
+		usleep(1000);
+	execute_loop(philo);
 	return (NULL);
 }

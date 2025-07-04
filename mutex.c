@@ -6,7 +6,7 @@
 /*   By: aal-joul <aal-joul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 13:34:36 by aal-joul          #+#    #+#             */
-/*   Updated: 2025/07/01 16:08:38 by aal-joul         ###   ########.fr       */
+/*   Updated: 2025/07/04 18:49:55 by aal-joul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,4 +27,10 @@ void	init_mutexes(t_data *data)
 	}
 	pthread_mutex_init(&data->print_lock, NULL);
 	pthread_mutex_init(&data->death_lock, NULL);
+}
+
+void	put_down_forks(t_philo *philo)
+{
+	pthread_mutex_unlock(&philo->data->forks[philo->left_fork]);
+	pthread_mutex_unlock(&philo->data->forks[philo->right_fork]);
 }

@@ -6,7 +6,7 @@
 /*   By: aal-joul <aal-joul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 12:08:55 by aal-joul          #+#    #+#             */
-/*   Updated: 2025/07/02 15:34:10 by aal-joul         ###   ########.fr       */
+/*   Updated: 2025/07/04 17:15:01 by aal-joul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,15 +21,23 @@
 
 typedef struct s_data	t_data;
 
+typedef struct s_fork_order
+{
+	int			first;
+	int			second;
+	const char	*first_msg;
+	const char	*second_msg;
+}	t_fork_order;
+
 typedef struct s_philo
 {
-	int			id;
-	int			left_fork;
-	int			right_fork;
-	long		last_meal;
-	int			meals_c;
-	pthread_t	thread;
-	t_data		*data;
+	int				id;
+	int				left_fork;
+	int				right_fork;
+	long			last_meal;
+	int				meals_c;
+	pthread_t		thread;
+	t_data			*data;
 	pthread_mutex_t	state_lock;
 }	t_philo;
 

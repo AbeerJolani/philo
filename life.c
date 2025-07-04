@@ -6,7 +6,7 @@
 /*   By: aal-joul <aal-joul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 13:26:50 by aal-joul          #+#    #+#             */
-/*   Updated: 2025/07/02 17:45:29 by aal-joul         ###   ########.fr       */
+/*   Updated: 2025/07/04 18:38:52 by aal-joul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int	smart_sleep(t_philo	*philo, long duration)
 	{
 		if (is_simulation_over(philo->data))
 			return (0);
-		usleep(1);
+		usleep(100);
 	}
 	return (1);
 }
@@ -45,17 +45,16 @@ int	has_died(t_philo *philo)
 	pthread_mutex_lock(&philo->state_lock);
 	last_meal = philo->last_meal;
 	pthread_mutex_unlock(&philo->state_lock);
-	if (now - philo->last_meal > philo->data->time_to_die)
+	if (now - last_meal > philo->data->time_to_die)
 	{
 		pthread_mutex_lock(&philo->data->death_lock);
-		pthread_mutex_lock(&philo->data->print_lock);
 		if (!philo->data->someone_die)
 		{
 			philo->data->someone_die = 1;
-			printf("%ld %d died\n",
-				now - philo->data->start_time, philo->id);
+			pthread_mutex_lock(&philo->data->print_lock);
+			printf("%ld %d died\n", now - philo->data->start_time, philo->id);
+			pthread_mutex_unlock(&philo->data->print_lock);
 		}
-		pthread_mutex_unlock(&philo->data->print_lock);
 		pthread_mutex_unlock(&philo->data->death_lock);
 		return (1);
 	}

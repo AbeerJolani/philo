@@ -6,7 +6,7 @@
 /*   By: aal-joul <aal-joul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 12:09:28 by aal-joul          #+#    #+#             */
-/*   Updated: 2025/07/02 16:20:07 by aal-joul         ###   ########.fr       */
+/*   Updated: 2025/07/04 17:11:58 by aal-joul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,50 +45,45 @@ int	ft_atoi(const char *str)
 	return (result * sign);
 }
 
-// static int	all_philos_ate(t_data *data)
-// {
-// 	int	i;
-
-// 	i = 0;
-// 	while (i < data->philo_n)
-// 	{
-// 		if (data->philos[i].meals_c < data->eat_count)
-// 			return (0);
-// 		i++;
-// 	}
-// 	return (1);
-// }
-
-void *all_feed(void *arg)
+int	check_all_feed(t_data *data)
 {
-	t_data *data = (t_data *)arg;
 	int	i;
 	int	full;
 
-	while (!check_death(data->philos))
+	i = 0;
+	full = 0;
+	pthread_mutex_lock(&data->death_lock);
+	while (i < data->philo_n)
 	{
-		full = 0;
-		i = 0;
-		while (i < data->philo_n)
-		{
-			pthread_mutex_lock(&data->philos[i].state_lock);
-			if (data->philos[i].meals_c >= data->eat_count)
-				full++;
-			pthread_mutex_unlock(&data->philos[i].state_lock);
-			i++;
-		}
-		if (full == data->philo_n)
-		{
-			pthread_mutex_lock(&data->death_lock);
-			data->someone_die = 1;
-			pthread_mutex_unlock(&data->death_lock);
+		pthread_mutex_lock(&data->philos[i].state_lock);
+		if (data->philos[i].meals_c >= data->eat_count)
+			full++;
+		pthread_mutex_unlock(&data->philos[i].state_lock);
+		i++;
+	}
+	if (data->someone_die || full == data->philo_n)
+	{
+		data->someone_die = 1;
+		pthread_mutex_unlock(&data->death_lock);
+		return (1);
+	}
+	pthread_mutex_unlock(&data->death_lock);
+	return (0);
+}
+
+void	*all_feed(void *arg)
+{
+	t_data	*data;
+
+	data = (t_data *)arg;
+	while (1)
+	{
+		if (check_all_feed(data))
 			return (NULL);
-		}
 		usleep(1000);
 	}
 	return (NULL);
 }
-
 
 void	cleanup(t_data *data)
 {
